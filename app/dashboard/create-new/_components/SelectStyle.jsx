@@ -39,17 +39,17 @@ function SelectStyle({ onUserSelect }) {
             className={`relative hover:scale-105 transition-all cursor-pointer rounded-xl ${
               selectedStyle === style.name && "border-4 border-primary"
             }`}
+            onClick={() => {
+                setSelectedStyle(style.name);
+                onUserSelect("imageStyle", style.name);
+              }}
           >
             <Image
               src={style.image}
               alt={style.name}
               width={100}
               height={100}
-              className="h-48 object-cover rounded-lg w-full"
-              onClick={() => {
-                setSelectedStyle(style.name);
-                onUserSelect("imageStyle", style.name);
-              }}
+              className="h-48 object-cover rounded-lg w-full" 
             />
             <h2 className="w-full absolute p-1 bg-black bottom-0 text-white text-center rounded-b-lg">
               {style.name}

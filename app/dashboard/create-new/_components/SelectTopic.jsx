@@ -36,9 +36,9 @@ function SelectTopic({ onUserSelect }) {
         <SelectTrigger className="w-full mt-5 p-6 text-lg">
           <SelectValue placeholder="Content Type" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="select-dropdown">
           {options.map((option, index) => (
-            <SelectItem key={index} value={option}>
+            <SelectItem className="select-option" key={index} value={option}>
               {option}
             </SelectItem>
           ))}

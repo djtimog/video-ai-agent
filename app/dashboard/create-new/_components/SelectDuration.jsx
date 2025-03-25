@@ -21,11 +21,11 @@ function SelectDuration({ onUserSelect }) {
         <SelectTrigger className="w-full mt-5 p-6 text-lg">
           <SelectValue placeholder="Select duration" />
         </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="15 Seconds">15 Seconds</SelectItem>
-          <SelectItem value="30 Seconds">30 Seconds</SelectItem>
-          <SelectItem value="45 Seconds">45 Seconds</SelectItem>
-          <SelectItem value="60 Seconds">60 Seconds</SelectItem>
+        <SelectContent className="select-dropdown">
+          <SelectItem value="15 Seconds" className="select-option">15 Seconds</SelectItem>
+          <SelectItem value="30 Seconds" className="select-option">30 Seconds</SelectItem>
+          <SelectItem value="45 Seconds" className="select-option">45 Seconds</SelectItem>
+          <SelectItem value="60 Seconds" className="select-option">60 Seconds</SelectItem>
         </SelectContent>
       </Select>
     </div>

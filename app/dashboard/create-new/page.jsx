@@ -19,10 +19,10 @@ function CreateNew() {
     }))
   }
   return (
-    <div className='md:px-20'>
+    <div className='md:px-10 lg:px-20'>
       <h2 className='font-bold text-4xl text-primary text-center mt-5'>Create New</h2>
 
-      <div className='mt-10 p-10 shadow-md rounded-md'>
+      <div className='mt-7 p-10 shadow-md rounded-md'>
         <SelectTopic onUserSelect={onHandleInputChange} />
 
         <SelectStyle onUserSelect={onHandleInputChange} />
