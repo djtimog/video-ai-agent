@@ -2,27 +2,34 @@
 import React from 'react'
 import SelectTopic from './_components/SelectTopic'
 import { useState } from 'react'
+import SelectDuration from './_components/SelectDuration'
+import { Button } from '@/components/ui/button'
+import SelectStyle from './_components/SelectStyle'
+import { Video } from 'lucide-react'
 function CreateNew() {
 
-  const [formData, setFormData] = useState({
-    topic: '',
-    type: '',
-    description: '',
-    title: '',
-    tags: [],
-  })
+  const [formData, setFormData] = useState([])
 
   const onHandleInputChange = (field, value) => {
     console.log(field, value)
+
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }))
   }
   return (
     <div className='md:px-20'>
       <h2 className='font-bold text-4xl text-primary text-center mt-5'>Create New</h2>
 
-      <div className='mx-2 mt-10 p-10 shadow-md rounded-md'>
+      <div className='mt-10 p-10 shadow-md rounded-md'>
         <SelectTopic onUserSelect={onHandleInputChange} />
 
+        <SelectStyle onUserSelect={onHandleInputChange} />
 
+        <SelectDuration onUserSelect={onHandleInputChange}/>
+
+        <Button className={'w-full mt-10'}>Create Video <Video /></Button>
       </div>
     </div>
   )
