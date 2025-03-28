@@ -5,7 +5,6 @@ import { NextResponse } from "next/server";
 export async function POST(req) {
   try {
     const { prompt } = await req.json();
-    console.log("Prompt received:", prompt);
 
     const result = await chatSession.sendMessage(prompt);
 
@@ -14,8 +13,7 @@ export async function POST(req) {
     }
 
     const resultText = await result.response.text();
-    console.log("Raw AI Response:", resultText);
-
+    
     let parsedResult;
     try {
       parsedResult = JSON.parse(resultText);
