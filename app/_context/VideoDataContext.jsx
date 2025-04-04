@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { createContext } from "react";
 
-export const VideoDataContext=createContext()
+export const VideoDataContext = createContext();

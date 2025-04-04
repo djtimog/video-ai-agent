@@ -10,12 +10,19 @@ import axios from "axios";
 import CustomLoading from "./_components/CustomLoading";
 import { v4 as uuidv4 } from "uuid";
 import { VideoDataContext } from "@/app/_context/VideoDataContext";
+import { VideoData } from "@/configs/schema";
+import { useUser } from "@clerk/nextjs";
+import PlayerDialog from "../_components/PlayerDialog";
+import { db } from "@/configs/db";
 
 function CreateNew() {
   const [formData, setFormData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [videoScript, setVideoScript] = useState();
   const { videoData, setVideoData } = useContext(VideoDataContext);
+  const { user } = useUser();
+  const [playVideo, setPlayVideo] = useState(false);
+  const [videoId, setVideoId] = useState(4);
 
   const onHandleInputChange = (field, value) => {
     setFormData((prev) => ({
@@ -63,11 +70,11 @@ function CreateNew() {
           ...prev,
           audioFileUrl: response.data.result,
         }));
-        await GenerateAudioCaption(response.data.result);
+        await GenerateAudioCaption(response.data.result, videoScriptData);
       });
   };
 
-  const GenerateAudioCaption = async (audioFileUrl) => {
+  const GenerateAudioCaption = async (audioFileUrl, videoScriptData) => {
     await axios
       .post("/api/generate-caption", { audioFileUrl })
       .then(async (response) => {
@@ -75,30 +82,60 @@ function CreateNew() {
           ...prev,
           captions: response.data.result,
         }));
-        await GenerateImage();
+        await GenerateImage(videoScriptData);
       });
   };
 
-  const GenerateImage = async () => {
+  const GenerateImage = async (videoScript) => {
     let images = [];
 
-    videoScript.forEach(async (script) => {
-      await axios
-        .post("/api/generate-image", { prompt: script?.imagePrompt })
-        .then((resp) => {
-          images.push(resp.data.result);
+    try {
+      for (const script of videoScript) {
+        const response = await axios.post("/api/generate-image", {
+          prompt: script?.imagePrompt,
         });
-    });
+        images.push(response.data.result);
+      }
 
-    console.log(images);
-    await setVideoData((prev) => ({
-      ...prev,
-      imageList: images,
-    }));
+      setVideoData((prev) => ({
+        ...prev,
+        imageList: images,
+      }));
+    } catch (error) {
+      console.error("Error generating images:", error);
+    }
+  };
+
+  const SaveVideoData = async (videoData) => {
+    setLoading(true);
+
+    try {
+      const result = await db
+        .insert(VideoData)
+        .values({
+          script: videoData.videoScript,
+          audioFileUrl: videoData.audioFileUrl,
+          captions: videoData.captions,
+          imageList: videoData.imageList,
+          createdBy: user.primaryEmailAddress.emailAddress,
+        })
+        .returning({ id: VideoData.id });
+
+      setVideoId(result[0].id);
+      setPlayVideo(true);
+      console.log(result);
+    } catch (err) {
+      console.error("Error inserting video data:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     console.log(videoData);
+    if (videoData && Object.keys(videoData).length === 4) {
+      SaveVideoData(videoData);
+    }
   }, [videoData]);
 
   return (
@@ -119,6 +156,7 @@ function CreateNew() {
         </Button>
       </div>
       <CustomLoading loading={loading} />
+      <PlayerDialog playVideo={playVideo} videoId={videoId} />
     </div>
   );
 }
