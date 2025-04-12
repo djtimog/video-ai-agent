@@ -10,10 +10,12 @@ import axios from "axios";
 import CustomLoading from "./_components/CustomLoading";
 import { v4 as uuidv4 } from "uuid";
 import { VideoDataContext } from "@/app/_context/VideoDataContext";
-import { VideoData } from "@/configs/schema";
+import { Users, VideoData } from "@/configs/schema";
 import { useUser } from "@clerk/nextjs";
 import PlayerDialog from "../_components/PlayerDialog";
 import { db } from "@/configs/db";
+import { UserDetailContext } from "@/app/_context/UserDetailContext";
+import { eq } from "drizzle-orm";
 
 function CreateNew() {
   const [formData, setFormData] = useState([]);
@@ -21,8 +23,9 @@ function CreateNew() {
   const [videoScript, setVideoScript] = useState();
   const { videoData, setVideoData } = useContext(VideoDataContext);
   const { user } = useUser();
-  const [playVideo, setPlayVideo] = useState(false);
+  const [playVideo, setPlayVideo] = useState(true);
   const [videoId, setVideoId] = useState(4);
+  const { userDetails, setUserDetails } = useContext(UserDetailContext);
 
   const onHandleInputChange = (field, value) => {
     setFormData((prev) => ({
@@ -32,6 +35,10 @@ function CreateNew() {
   };
 
   const onCreateClickHandler = async () => {
+    if (!userDetails?.credits >= 0) {
+      toast("Credit limit reached");
+      return;
+    }
     setLoading(true);
 
     await GetVideoScript();
@@ -120,7 +127,7 @@ function CreateNew() {
           createdBy: user.primaryEmailAddress.emailAddress,
         })
         .returning({ id: VideoData.id });
-
+      await UpdateUserCredits();
       setVideoId(result[0].id);
       setPlayVideo(true);
       console.log(result);
@@ -129,6 +136,19 @@ function CreateNew() {
     } finally {
       setLoading(false);
     }
+  };
+  const UpdateUserCredits = async () => {
+    const result = await db
+      .update(Users)
+      .set({
+        credits: userDetails?.credits - 10,
+      })
+      .where(eq(Users.email, user?.primaryEmailAddress?.emailAddress));
+      console.log(result)
+      setUserDetails(prev=>({
+        ...prev,
+        "credits" : userDetails?.credits - 10
+      }))
   };
 
   useEffect(() => {

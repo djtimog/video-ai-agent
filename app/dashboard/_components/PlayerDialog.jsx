@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import {
   Dialog,
@@ -11,13 +12,16 @@ import { Button } from "@/components/ui/button";
 import { eq } from "drizzle-orm";
 import { VideoData } from "@/configs/schema";
 import { db } from "@/configs/db";
+import { useRouter } from "next/navigation";
 
 function PlayerDialog({ playVideo, videoId }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [videoData, setVideoData] = useState(null);
+  const [durationInFrame, setDurationInFrame] = useState(120);
+  const router = useRouter();
 
   useEffect(() => {
-    setOpenDialog(playVideo);
+    setOpenDialog(!openDialog);
     GetVideoData();
   }, [playVideo]);
 
@@ -41,14 +45,27 @@ function PlayerDialog({ playVideo, videoId }) {
           <div>
             <Player
               component={RemotionVideo}
-              durationInFrames={120}
+              durationInFrames={Number(durationInFrame.toFixed(0))}
               compositionWidth={300}
               compositionHeight={450}
               fps={30}
-              inputProps={{ ...videoData }}
+              controls
+              inputProps={{
+                ...videoData,
+                setDurationInFrame: (frameValue) =>
+                  setDurationInFrame(frameValue),
+              }}
             />
-            <div className="flex gap-10">
-              <Button variant={"ghost"}>Cancel</Button>
+            <div className="flex gap-10 mt-10">
+              <Button
+                variant={"ghost"}
+                onClick={() => {
+                  router.replace("/daShboard");
+                  setOpenDialog(false);
+                }}
+              >
+                Cancel
+              </Button>
               <Button>Export</Button>
             </div>
           </div>
