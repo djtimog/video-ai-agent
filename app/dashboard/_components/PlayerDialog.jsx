@@ -15,7 +15,8 @@ import { db } from "@/configs/db";
 import { useRouter } from "next/navigation";
 
 function PlayerDialog({ playVideo, videoId }) {
-  const [openDialog, setOpenDialog] = useState(false);
+  
+  const [openDialog, setOpenDialog] = useState(true);
   const [videoData, setVideoData] = useState(null);
   const [durationInFrame, setDurationInFrame] = useState(120);
   const router = useRouter();

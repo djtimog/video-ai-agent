@@ -12,7 +12,7 @@ export async function POST(req) {
     formData.append("steps", "50");
 
     const response = await fetch(
-      "https://api.stability.ai/v2beta/stable-image/generate/core",
+      "https://api.stability.ai/v2beta/stable-image/generate/ultra",
       {
         method: "POST",
         headers: {
